@@ -1,4 +1,4 @@
-csl-behring
+resnet-neo4j-kg
 ==============================
 
 This project will build a knowledge graph using resnet data.
