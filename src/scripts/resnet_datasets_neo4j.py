@@ -119,7 +119,7 @@ class CreateDatasets:
         Raises:
             psycopg2.DatabaseError: An error from psycopg2 when the connection cannot be established.
         """
-        self.db_name, self.db_user, self.db_host, self.db_pwd = CreateDatasets.get_sqldb_creds()
+        self.db_name, self.db_user, self.db_host, self.db_pwd = self.get_sqldb_creds()
         conn = ps2.connect(
             host=self.db_host,
             database=self.db_name,
