@@ -206,7 +206,7 @@ class CreateDatasets:
         output_path = os.path.join(self.base_path, file_name)
         if not output_path.endswith('.txt'):
             output_path += '.txt'
-        conn = CreateDatasets.create_connection_to_postgresql_db()
+        conn = self.create_connection_to_postgresql_db()
         try:
             with conn.cursor() as cur:
                 with open(output_path, 'w', encoding="utf-8") as f:
@@ -241,7 +241,7 @@ class CreateDatasets:
         output_path = os.path.join(self.base_path, file_name)
         if not output_path.endswith('.txt'):
             output_path += '.txt'
-        conn = CreateDatasets.create_connection_to_postgresql_db()
+        conn = self.create_connection_to_postgresql_db()
         try:
             with conn.cursor() as cur:
                 with open(output_path, 'w', encoding="utf-8") as f:
@@ -276,7 +276,7 @@ class CreateDatasets:
         output_path = os.path.join(self.base_path, file_name)
         if not output_path.endswith('.txt'):
             output_path += '.txt'
-        conn = CreateDatasets.create_connection_to_postgresql_db()
+        conn = self.create_connection_to_postgresql_db()
         try:
             with conn.cursor() as cur:
                 with open(output_path, 'w', encoding="utf-8") as f:
@@ -311,7 +311,7 @@ class CreateDatasets:
         output_path = os.path.join(self.base_path, file_name)
         if not output_path.endswith('.txt'):
             output_path += '.txt'
-        conn = CreateDatasets.create_connection_to_postgresql_db()
+        conn = self.create_connection_to_postgresql_db()
         try:
             with conn.cursor() as cur:
                 with open(output_path, 'w', encoding="utf-8") as f:
