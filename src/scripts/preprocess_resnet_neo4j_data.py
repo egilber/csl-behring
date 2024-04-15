@@ -35,7 +35,7 @@ def inOutkeys_to_lists(df):
     second_ids = []
     df['inOutkey'] = df['inOutkey'].apply(lambda x: x.replace('[', '').replace(']', ''))
 
-    for item in df['inOutkey']:
+    for item in df['inOutkey'].tolist():
         x = item.split(',')
         first_ids.append(x[0].strip())
         second_ids.append(x[1].strip())
@@ -62,31 +62,31 @@ def convert_object_to_category(df: pd.DataFrame) -> pd.DataFrame:
     df_obj = df.select_dtypes(['object'])
 
     for col in list(df_obj.columns):
-        df[col] = df[col].apply(lambda x: x.strip())
+        df[col] = df[col].apply(lambda x: str(x).strip())
         df[col] = df[col].astype('category')
     return df
 
 
-def ensure_extension(output_path: str, extension: str) -> str:
+def ensure_extension(file_name: str, extension: str) -> str:
     """
-        Ensures that the output path has the specified file extension. If the output path does not
-        already end with the given extension, the extension is appended to the output path.
+    Ensures that the output path has the specified file extension. If the output path does not
+    already end with the given extension, the extension is appended to the output path.
 
-        This function is useful for file handling operations where a specific file extension is
-        required, ensuring consistency in file naming conventions and preventing errors related
-        to file type mismatches.
+    This function is useful for file handling operations where a specific file extension is
+    required, ensuring consistency in file naming conventions and preventing errors related
+    to file type mismatches.
 
-        Args:
-            output_path (str): The initial file path which may or may not include the desired extension.
-            extension (str): The desired file extension to ensure is at the end of the output path.
-                             The extension should include the dot ('.') if it is required, e.g., '.txt'.
+    Args:
+        file_name (str): The initial file name which may or may not include the desired extension.
+        extension (str): The desired file extension to ensure is at the end of the output path.
+                         The extension should include the dot ('.') if it is required, e.g., '.txt'.
 
-        Returns:
-            str: The output path guaranteed to end with the specified extension.
-        """
-    if not output_path.endswith(extension):
-        output_path += extension
-    return output_path
+    Returns:
+        str: The output path guaranteed to end with the specified extension.
+    """
+    if not file_name.endswith(extension):
+        file_name += extension
+    return file_name
 
 
 class DataProcessor:
@@ -110,20 +110,22 @@ class DataProcessor:
         self.bi_directional_ds = None
         self.attributes_ds = None
         self.nodes_ds = None
-        # self.relations_header = None
+        self.procd_biDirect_rels = None
+        self.procd_direct_rels = None
+        self.procd_attrib_rels = None
 
     def _update_config_file(self, key: str, value: str):
         """
-        Update the configuration file `file_paths.json` with the provided key-value pair.
-        If the configuration file does not exist, it creates one.
+            Update the configuration file `file_paths.json` with the provided key-value pair.
+            If the configuration file does not exist, it creates one.
 
-        Args:
-            key (str): The key to be added/updated in the configuration file.
-            value (str): The value to be assigned to the key in the configuration file.
+            Args:
+                key (str): The key to be added/updated in the configuration file.
+                value (str): The value to be assigned to the key in the configuration file.
 
-        Raises:
-            IOError: If there is an error in opening/reading/writing to the file.
-        """
+            Raises:
+                IOError: If there is an error in opening/reading/writing to the file.
+            """
         config_file = os.path.join(self.base_path, 'file_paths.json')
         if os.path.exists(config_file):
             with open(config_file, 'r') as f:
@@ -151,10 +153,13 @@ class DataProcessor:
         config_file = os.path.join(self.base_path, 'file_paths.json')
         with open(config_file, 'r') as f:
             file_paths = json.load(f)
-        self.directional_ds = file_paths['directional_ds']
-        self.bi_directional_ds = file_paths['bi_directional_ds']
-        self.attributes_ds = file_paths['attributes_ds']
-        self.nodes_ds = file_paths['nodes_ds']
+        self.directional_ds = file_paths.get('directional_ds')
+        self.bi_directional_ds = file_paths.get('bi_directional_ds')
+        self.attributes_ds = file_paths.get('attributes_ds')
+        self.nodes_ds = file_paths.get('nodes_ds')
+        self.procd_biDirect_rels = file_paths.get('procd_biDirect_rels')
+        self.procd_direct_rels = file_paths.get('procd_direct_rels')
+        self.procd_attrib_rels = file_paths.get('procd_attrib_rels')
 
     def create_header_file(self, cols: List[str], file_name: str, relationship: bool = True) -> NoReturn:
         """
@@ -176,8 +181,9 @@ class DataProcessor:
 
         NoReturn: This function does not return any value.
         """
+        file_name = ensure_extension(file_name, '.txt')
         output_path = os.path.join(self.base_path, file_name)
-        ensure_extension(output_path, '.txt')
+
         df_headers = pd.DataFrame(columns=cols)
         df_headers.to_csv(output_path, sep='|', index=False)
         if relationship:
@@ -205,11 +211,10 @@ class DataProcessor:
             IOError: If there is an issue with file operations.
             pickle.PicklingError: If there is an error during the serialization process.
         """
+        file_name = ensure_extension(file_name, '.pkl')
         output_path = os.path.join(self.base_path, file_name)
-        # Ensuring the file name ends with .pkl
-        ensure_extension(output_path, '.pkl')
 
-        df = pd.read_csv(self.directional_ds, sep='|', header=None, encoding='utf-8')
+        df = pd.read_csv(self.bi_directional_ds, sep='|', header=None, encoding='utf-8')
         df.columns = ['msrc_id', ':START_ID', 'inOutkey', 'type:TYPE', 'relationship', 'effect', 'mechanism',
                       'ref_count:int', ':END_ID', 'id2', 'biomarkertype', 'celllinename', 'celltype',
                       'changetype', 'organ', 'organism', 'quantitativetype', 'tissue']
@@ -244,11 +249,10 @@ class DataProcessor:
             IOError: If there is an issue with file operations.
             pickle.PicklingError: If there is an error during the serialization process.
         """
+        file_name = ensure_extension(file_name, '.pkl')
         output_path = os.path.join(self.base_path, file_name)
-        # Ensuring the file name ends with .pkl
-        ensure_extension(output_path, '.pkl')
 
-        df = pd.read_csv(self.bi_directional_ds, sep='|', header=None, encoding='utf-8')
+        df = pd.read_csv(self.directional_ds, sep='|', header=None, encoding='utf-8')
         df.columns = ['msrc_id', ':START_ID', 'type:TYPE', 'effect', 'mechanism', 'ref_count:int', ':END_ID',
                       'id2', 'biomarkertype', 'celllinename', 'celltype', 'changetype', 'organ', 'organism',
                       'quantitativetype', 'tissue', 'nct_id', 'phase']
@@ -281,23 +285,24 @@ class DataProcessor:
             IOError: If there is an issue with file operations.
             pickle.PicklingError: If there is an error during the serialization process.
         """
+        file_name = ensure_extension(file_name, '.pkl')
         output_path = os.path.join(self.base_path, file_name)
-        # Ensuring the file name ends with .pkl
-        ensure_extension(output_path, '.pkl')
 
-        df = pd.read_csv(self.attributes_ds, sep='|', header=None, encoding='utf-8')
+        df = pd.read_csv(self.attributes_ds, sep='|', header=None, encoding='utf-8', low_memory=False)
+        df = df.fillna('None')
         df.columns = ['msrc_id', ':START_ID', 'id2', 'type:TYPE', ':END_ID']
         df = df[df['type:TYPE'] != 'None']
         df.reset_index(drop=True, inplace=True)
         df = df.drop(columns=['id2'])
         for col in list(df.columns):
             df[col] = df[col].apply(lambda x: str(x).strip())
-        df[':START_ID'] = df[':START_ID'].astype('int64')
-        df[':END_ID'] = df[':END_ID'].astype('int64')
+        df[':START_ID'] = pd.to_numeric(df[':START_ID'], errors='coerce').astype('int64')
+        df[':END_ID'] = pd.to_numeric(df[':END_ID'], errors='coerce').astype('int64')
+
         df['type:TYPE'] = df['type:TYPE'].astype('category')
         with open(output_path, 'wb') as file:
             pickle.dump(df, file)
-        self._update_config_file('procd_nodes', str(output_path))
+            self._update_config_file('procd_attrib_rels', str(output_path))
 
     def concat_relationship_files(self, file_name: str) -> NoReturn:
         """
@@ -319,24 +324,31 @@ class DataProcessor:
             IOError: If there is an issue with file operations.
             pd.errors: If there is an error during DataFrame operations like concatenation or file writing.
         """
+        file_name = ensure_extension(file_name, '.txt')
         output_path = os.path.join(self.base_path, file_name)
-        ensure_extension(output_path, '.txt')  # Ensuring the file name ends with .pkl
 
-        df_directional = pd.read_pickle(self.directional_ds)
-        df_biDirectional = pd.read_pickle(self.bi_directional_ds)
-        df_att = pd.read_pickle(self.attributes_ds)
+        df_directional = pd.read_pickle(self.procd_direct_rels)
+        df_biDirectional = pd.read_pickle(self.procd_biDirect_rels)
+        df_att = pd.read_pickle(self.procd_attrib_rels)
 
         df_concat = pd.concat([df_directional, df_biDirectional, df_att])
         df_concat['ref_count:int'].fillna(0, inplace=True)
-        df_concat = df_concat.fillna('None')
+        # Convert all categorical columns to object type
+        for col in df_concat.select_dtypes(include=['category']).columns:
+            df_concat[col] = df_concat[col].astype('object')
+        df_concat.fillna('None', inplace=True)
+        df_concat = df_concat.replace('nan', 'None')
+        df_concat = df_concat.replace('None', '_')
+
         df_concat['ref_count:int'] = df_concat['ref_count:int'].astype('int16')
         df_concat['msrc_id'] = df_concat['msrc_id'].astype('int64')
-        df_concat = df_concat.replace('None', '_')
         df_concat = convert_object_to_category(df_concat.drop_duplicates().reset_index(drop=True))
+
         df_concat['type:TYPE'] = df_concat['type:TYPE'].apply(lambda x: x.upper())
 
         cols = list(df_directional.columns)
         df_concat[cols].to_csv(output_path, sep='|', index=False, header=True)
+        self._update_config_file('concat_relations_file', str(output_path))
 
         self.create_header_file(cols, file_name='relationships_header', relationship=True)
 
@@ -360,29 +372,20 @@ class DataProcessor:
             IOError: If there is an issue with file operations.
             pd.errors: If there is an error during DataFrame operations.
         """
+        file_name = ensure_extension(file_name, '.txt')
         output_path = os.path.join(self.base_path, file_name)
-        # Ensuring the file name ends with .pkl
-        ensure_extension(output_path, '.txt')
 
-        df = pd.read_pickle(self.nodes_ds)
+        df = pd.read_csv(self.nodes_ds, sep='|', header=None, encoding='utf-8', low_memory=False)
         df.columns = [':ID', 'name', ':LABEL']
         df = df.applymap(lambda x: str(x).strip())
         df[':LABEL'] = df[':LABEL'].apply(lambda x: x.upper())
         df[':ID'] = df[':ID'].astype('int64')
+        df['name'] = df['name'].replace([';;', ';'], ':', regex=True)
 
-        complex_node = df.loc[df[':ID'] == -7235442027224814239]['name'].iloc[0]
-        lst = complex_node.split('\n')  # if on Linux server
-        new_list = [item.split('|') for item in lst]
-        df_temp = pd.DataFrame(new_list, columns=[':ID', 'name', ':LABEL']).dropna()
-        df_temp[':LABEL'] = df_temp[':LABEL'].apply(lambda x: x.upper())
+        df.to_csv(output_path, sep='|', index=False, header=True)
+        self._update_config_file('procd_node_file', str(output_path))
 
-        df = df[df[':ID'] != -7235442027224814239]
-
-        df_new = pd.concat([df, df_temp], ignore_index=True)
-        df_new['name'] = df_new['name'].replace([';;', ';'], ':', regex=True)
-
-        df_new.to_csv(output_path, sep='|', index=False, header=True)
-        self.create_header_file(list(df_new.columns), file_name='nodes_header', relationship=False)
+        self.create_header_file(list(df.columns), file_name='nodes_header', relationship=False)
 
 
 def main() -> NoReturn:
@@ -425,6 +428,7 @@ def main() -> NoReturn:
     args = parser.parse_args()
 
     dp = DataProcessor(base_path=args.base_path)
+    dp._load_dataset_file_paths()  # Load the dataset file paths
 
     for method in args.method:
         if method == 'process_bi_directional_rels':
@@ -434,6 +438,7 @@ def main() -> NoReturn:
         elif method == 'process_attribute_rels':
             dp.process_attribute_rels(args.file_name)
         elif method == 'concat_relationship_files':
+            dp._load_dataset_file_paths()  # Load the dataset file paths
             dp.concat_relationship_files(args.file_name)
         elif method == 'process_node_file':
             dp.process_node_file(args.file_name)
