@@ -1,11 +1,11 @@
-### **Knowledge Graph Data Preparation Scripts**
+## **Knowledge Graph Data Preparation Scripts**
 
 This repository contains two Python scripts designed to automate the creation and preprocessing of datasets for
 uploading into a Neo4j database to build a knowledge graph. The first script, create_datasets.py, handles the
 extraction and initial formatting of data from a PostgreSQL database. The second script, preprocess_datasets.py,
 processes the data further to ensure compatibility and optimized structure for Neo4j.
 
-#### **Environment Setup**
+### **Environment Setup**
 
 1. **Python Installation**: Ensure Python 3.x is installed on your system.
 2. **Dependency Installation**: Install required Python packages:
@@ -14,8 +14,8 @@ processes the data further to ensure compatibility and optimized structure for N
 3. **Environment Variables**: Set up the necessary environment variables or use a .env file to manage database credentials 
 and other configuration settings. The required variables include DB_NAME, DB_USER, DB_HOST_IP, and DB_PWD.
 
-#### **Scripts Overview**
-##### **1. 'create_datasets.py'**
+### **Scripts Overview**
+#### **1. 'create_datasets.py'**
 
 This script interacts with a PostgreSQL database to fetch data based on predefined SQL queries and saves the output 
 in CSV format. It handles four main types of datasets:
@@ -40,7 +40,7 @@ Available methods:
 * create_attributes_ds
 * create_nodes_ds
 
-##### **2. 'preprocess_datasets.py'**
+#### **2. 'preprocess_datasets.py'**
 
 After the datasets are created, preprocess_datasets.py takes these datasets and processes them to align with the 
 requirements of Neo4j. This includes type conversions, splitting keys, and preparing headers for Neo4j import tools.
@@ -59,11 +59,11 @@ Available methods:
 * concat_relationship_files
 * process_node_file
 
-#### **Configuration**
+### **Configuration**
 Both scripts use a configuration file (file_paths.json) to manage dataset paths, which is automatically 
 updated and read by the scripts as needed.
 
-#### **Loading Data Into Neo4j**
+### **Loading Data Into Neo4j**
 
 To load data into Neo4j, click on 'Add' in the project pane of the Neo4j application. Name the new project, click on 
 the '...' by the 'Open' button for the project, and choose 'Terminal'. Take note of the dbms number at the cursor. 
