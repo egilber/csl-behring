@@ -15,7 +15,7 @@ processes the data further to ensure compatibility and optimized structure for N
 and other configuration settings. The required variables include DB_NAME, DB_USER, DB_HOST_IP, and DB_PWD.
 
 #### **Scripts Overview**
-#####1. 'create_datasets.py'
+##### **1. 'create_datasets.py'**
 
 This script interacts with a PostgreSQL database to fetch data based on predefined SQL queries and saves the output 
 in CSV format. It handles four main types of datasets:
@@ -40,11 +40,12 @@ Available methods:
 * create_attributes_ds
 * create_nodes_ds
 
-#####2. 'preprocess_datasets.py'
+##### **2. 'preprocess_datasets.py'**
+
 After the datasets are created, preprocess_datasets.py takes these datasets and processes them to align with the 
 requirements of Neo4j. This includes type conversions, splitting keys, and preparing headers for Neo4j import tools.
 
-####**Running the Script**
+**Running the Script**
 
 To run preprocess_datasets.py, specify the processing method and the input file:
 
@@ -62,7 +63,7 @@ Available methods:
 Both scripts use a configuration file (file_paths.json) to manage dataset paths, which is automatically 
 updated and read by the scripts as needed.
 
-####**Loading Data Into Neo4j**
+#### **Loading Data Into Neo4j**
 
 To load data into Neo4j, click on 'Add' in the project pane of the Neo4j application. Name the new project, click on 
 the '...' by the 'Open' button for the project, and choose 'Terminal'. Take note of the dbms number at the cursor. 
