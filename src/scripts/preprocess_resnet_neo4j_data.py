@@ -92,18 +92,22 @@ def ensure_extension(file_name: str, extension: str) -> str:
 class DataProcessor:
     def __init__(self, base_path: str):
         """
-        DataProcessor is a class for managing and processing different datasets related to a specific project or analysis.
+        Initializes the DataProcessor class for managing and processing various datasets related to a specific project or analysis.
 
-        This class initializes with a base path and prepares to manage various datasets including directional,
-        bidirectional, attributes, nodes datasets, and a relations header. These datasets are not loaded at
-        initialization but are set up to be defined later.
+        The constructor sets up paths for managing different datasets including directional, bidirectional, attributes, and nodes datasets.
+        These dataset paths are initialized to `None` and are expected to be defined later as the application progresses.
+
+        Args:
+            base_path (str): The root directory where datasets are stored or will be stored.
 
         Attributes:
-            base_path (str): The root directory where datasets are stored or will be stored.
             directional_ds (Optional[str]): Path to the directional dataset, initially None.
             bi_directional_ds (Optional[str]): Path to the bidirectional dataset, initially None.
             attributes_ds (Optional[str]): Path to the attributes dataset, initially None.
             nodes_ds (Optional[str]): Path to the nodes dataset, initially None.
+            procd_biDirect_rels (Optional[str]): Path to the processed bidirectional relationships dataset, initially None.
+            procd_direct_rels (Optional[str]): Path to the processed directional relationships dataset, initially None.
+            procd_attrib_rels (Optional[str]): Path to the processed attributes relationships dataset, initially None.
         """
         self.base_path = base_path
         self.directional_ds = None
@@ -114,18 +118,23 @@ class DataProcessor:
         self.procd_direct_rels = None
         self.procd_attrib_rels = None
 
-    def _update_config_file(self, key: str, value: str):
+    def _update_config_file(self, key: str, value: str) -> None:
         """
-            Update the configuration file `file_paths.json` with the provided key-value pair.
-            If the configuration file does not exist, it creates one.
+        Updates the configuration file `file_paths.json` located at `self.base_path` with the provided key-value pair.
+        If the configuration file does not exist, it creates a new one. This method handles the reading, updating,
+        and writing of the JSON configuration file.
 
-            Args:
-                key (str): The key to be added/updated in the configuration file.
-                value (str): The value to be assigned to the key in the configuration file.
+        Args:
+            key (str): The key to be added or updated in the configuration file.
+            value (str): The value to be assigned to the key in the configuration file.
 
-            Raises:
-                IOError: If there is an error in opening/reading/writing to the file.
-            """
+        Returns:
+            None: This method does not return a value but modifies the configuration file directly.
+
+        Raises:
+            IOError: If there is an error in opening, reading, or writing to the file.
+            json.JSONDecodeError: If there is an error decoding the JSON data from the file during reading.
+        """
         config_file = os.path.join(self.base_path, 'file_paths.json')
         if os.path.exists(config_file):
             with open(config_file, 'r') as f:
@@ -136,15 +145,16 @@ class DataProcessor:
         with open(config_file, 'w') as f:
             json.dump(file_paths, f)
 
-    def _load_dataset_file_paths(self):
+    def _load_dataset_file_paths(self) -> None:
         """
         Load dataset file paths from the configuration file `file_paths.json` located
         at `self.base_path`.
 
+        This method updates the internal state of the object by setting various dataset path
+        attributes according to the contents found in the `file_paths.json` configuration file.
+
         Returns:
-            dict: A dictionary containing the file paths loaded from the configuration file.
-                  The keys are the identifiers of the file paths, and the values are the
-                  corresponding paths.
+            None: This method does not return a value but updates the instance variables of the class.
 
         Raises:
             IOError: If there is an error in opening/reading the file.
@@ -161,7 +171,7 @@ class DataProcessor:
         self.procd_direct_rels = file_paths.get('procd_direct_rels')
         self.procd_attrib_rels = file_paths.get('procd_attrib_rels')
 
-    def create_header_file(self, cols: List[str], file_name: str, relationship: bool = True) -> NoReturn:
+    def create_header_file(self, cols: List[str], file_name: str, relationship: bool = True) -> None:
         """
         Creates a CSV header file with the specified columns and updates the configuration file
         with the path to this header file. The file can represent either a relationship or node
@@ -179,7 +189,8 @@ class DataProcessor:
         at the specified path. Finally, it updates the configuration file to store the path
         to this new header file under the appropriate category (relationship or nodes).
 
-        NoReturn: This function does not return any value.
+        Returns:
+            None: This function does not return any value.
         """
         file_name = ensure_extension(file_name, '.txt')
         output_path = os.path.join(self.base_path, file_name)
@@ -191,7 +202,7 @@ class DataProcessor:
         else:
             self._update_config_file('nodes_header', str(output_path))
 
-    def process_bi_directional_rels(self, file_name: str) -> NoReturn:
+    def process_bi_directional_rels(self, file_name: str) -> None:
         """
         Processes bi-directional relationship data from a CSV file, transforms it, and serializes it to a binary file.
 
@@ -204,7 +215,8 @@ class DataProcessor:
             file_name (str): The name of the file where the processed data will be saved. The file name
                              will have a '.pkl' extension ensured by the `ensure_extension` function.
 
-        NoReturn: This function does not return any value but updates the internal state by writing the processed
+        Returns:
+            None: This function does not return any value but updates the internal state by writing the processed
                   data to a file and updating the configuration file to record the path of the processed data.
 
         Raises:
@@ -230,7 +242,7 @@ class DataProcessor:
             pickle.dump(df, file)
         self._update_config_file('procd_biDirect_rels', str(output_path))
 
-    def process_directional_rels(self, file_name: str) -> NoReturn:
+    def process_directional_rels(self, file_name: str) -> None:
         """
         Processes directional relationship data from a file, transforms it, and serializes it to a binary file.
 
@@ -242,7 +254,8 @@ class DataProcessor:
             file_name (str): The name of the file where the processed data will be saved. The file name
                              will have a '.pkl' extension ensured by the `ensure_extension` function.
 
-        NoReturn: This function does not return any value but updates the internal state by writing the processed
+        Returns:
+            None: This function does not return any value but updates the internal state by writing the processed
                   data to a file and updating the configuration file to record the path of the processed data.
 
         Raises:
@@ -264,7 +277,7 @@ class DataProcessor:
             pickle.dump(df, file)
         self._update_config_file('procd_direct_rels', str(output_path))
 
-    def process_attribute_rels(self, file_name: str) -> NoReturn:
+    def process_attribute_rels(self, file_name: str) -> None:
         """
         Processes attribute relationship data from a CSV file, transforms it, and serializes it to a binary file.
 
@@ -278,7 +291,8 @@ class DataProcessor:
             file_name (str): The name of the file where the processed data will be saved. The file name
                              will have a '.pkl' extension ensured by the `ensure_extension` function.
 
-        NoReturn: This function does not return any value but updates the internal state by writing the processed
+        Returns:
+            None: This function does not return any value but updates the internal state by writing the processed
                   data to a file and updating the configuration file to record the path of the processed data.
 
         Raises:
@@ -304,7 +318,7 @@ class DataProcessor:
             pickle.dump(df, file)
             self._update_config_file('procd_attrib_rels', str(output_path))
 
-    def concat_relationship_files(self, file_name: str) -> NoReturn:
+    def concat_relationship_files(self, file_name: str) -> None:
         """
         Concatenates various relationship datasets into a single file and writes the result to a file.
 
@@ -317,7 +331,8 @@ class DataProcessor:
             file_name (str): The name of the output file where the concatenated data will be saved.
                              The '.txt' extension is ensured by the `ensure_extension` function.
 
-        NoReturn: This function does not return any value but performs file I/O and updates internal
+        Returns:
+            None: This function does not return any value but performs file I/O and updates internal
                   configuration by saving processed data and updating related metadata.
 
         Raises:
@@ -352,25 +367,26 @@ class DataProcessor:
 
         self.create_header_file(cols, file_name='relationships_header', relationship=True)
 
-    def process_node_file(self, file_name: str) -> NoReturn:
+    def process_node_file(self, file_name: str) -> None:
         """
-        Processes node data from a pickle file, modifies and enriches it, then saves it as a CSV file.
+        Processes node data from a CSV file, modifies and enriches it, and then saves it as a CSV file.
 
-        This method loads node data from a pickle file, formats and cleans it by adjusting data types
-        and modifying string content. It also handles a specific complex node by breaking it down
-        from one format into a structured DataFrame format, then combines it back with the main dataset.
-        The final processed DataFrame is then saved as a CSV file.
+        This method reads node data from a CSV file specified by `nodes_ds`, formats, and cleans the data by adjusting
+        data types and modifying string content to ensure consistency and proper formatting. Specifically, it handles
+        complex data entries by reformatting them and ensuring all identifiers and labels are in the correct format.
+        The processed data is then saved in a new CSV file at a location determined by the `file_name` argument.
 
         Args:
-            file_name (str): The name of the output file where the processed node data will be saved.
-                             The '.txt' extension is ensured by the `ensure_extension` function.
+            file_name (str): The name of the output file where the processed node data will be saved. The '.txt' extension
+                             is ensured by the `ensure_extension` function.
 
-        NoReturn: This function does not return any value but updates the internal state by writing the processed
+        Returns:
+            None: This function does not return any value but updates the internal state by writing the processed
                   data to a file and updating the configuration to include this new node header file.
 
         Raises:
-            IOError: If there is an issue with file operations.
-            pd.errors: If there is an error during DataFrame operations.
+            IOError: If there is an issue with file operations such as reading from or writing to the disk.
+            pd.errors.ParserError: If there is an error during the parsing of the CSV data.
         """
         file_name = ensure_extension(file_name, '.txt')
         output_path = os.path.join(self.base_path, file_name)
@@ -388,7 +404,7 @@ class DataProcessor:
         self.create_header_file(list(df.columns), file_name='nodes_header', relationship=False)
 
 
-def main() -> NoReturn:
+def main() -> None:
     """
     Entry point of the script that processes datasets based on command-line arguments.
 
