@@ -31,7 +31,7 @@ Each dataset is saved with a .txt extension and is intended for further processi
 
 To run create_datasets.py, use the following command, specifying the method and the output filename:
 
-   ```python create_datasets.py --method create_directional_ds --file_name directional.txt --base_path ./data/processed/```
+   ```python ./src/scripts/create_datasets.py --method create_directional_ds --file_name directional.txt --base_path ./data/processed/```
 
 Available methods:
 
@@ -49,7 +49,7 @@ requirements of Neo4j. This includes type conversions, splitting keys, and prepa
 
 To run preprocess_datasets.py, specify the processing method and the input file:
 
-   ```python preprocess_datasets.py --method process_bi_directional_rels --file_name bi_directional.pkl --base_path ./data/processed/```
+   ```python ./src/scripts/preprocess_datasets.py --method process_bi_directional_rels --file_name bi_directional.pkl --base_path ./data/processed/```
 
 Available methods:
 
