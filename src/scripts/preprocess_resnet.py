@@ -1,6 +1,6 @@
 import pickle
 import pandas as pd
-from typing import Any, Optional, List, Tuple, List, NoReturn
+from typing import Tuple, List
 from configs.paths import DataPaths
 
 
@@ -156,7 +156,7 @@ class DataProcessor:
 
     def process_node_file(self) -> None:
         """
-        Process node data from raw data and save it as a CSV file.
+        Process node data from raw data and save it to a file.
         """
         output_path = self.paths.get_full_path(self.paths.nodes_procd)
         df = pd.read_csv(self.paths.get_full_path(self.paths.nodes_raw), sep='|', header=None, encoding='utf-8',

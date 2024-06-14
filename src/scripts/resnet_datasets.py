@@ -99,14 +99,14 @@ class CreateDatasets:
 
     def create_attributes_ds(self) -> None:
         """
-        Create a dataset for attribute relationships and save it to a CSV file.
+        Create a dataset for attribute relationships and save it to a file.
         """
         output_path = self.paths.get_full_path(self.paths.attribute_rels)
         self.execute_sql_query(attributes_sql_query, output_path)
 
     def create_nodes_ds(self) -> None:
         """
-        Create a dataset for nodes and save it to a CSV file.
+        Create a dataset for nodes and save it to a file.
         """
         output_path = self.paths.get_full_path(self.paths.nodes_raw)
         self.execute_sql_query(node_sql_query, output_path)
