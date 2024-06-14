@@ -185,5 +185,17 @@ dependencies:
   - zlib=1.2.12=h166bdaf_2
   - zstd=1.5.2=h6239696_4
   - pip:
-    - typing-extensions==4.3.0
+      - astroid==3.2.2
+      - boto3==1.34.126
+      - botocore==1.34.126
+      - dill==0.3.8
+      - isort==5.13.2
+      - jmespath==1.0.1
+      - mccabe==0.7.0
+      - metaflow==2.12.3
+      - platformdirs==4.2.2
+      - pylint==3.2.3
+      - s3transfer==0.10.1
+      - tomlkit==0.12.5
+      - typing-extensions==4.3.0
 prefix: /home/egilbert/miniconda3/envs/psg_sqlDB
