@@ -6,6 +6,7 @@
 *.pkl
 *.png
 *.txt
+*.json
 Sandbox*
 # Byte-compiled / optimized / DLL files
 __pycache__/
