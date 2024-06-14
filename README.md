@@ -19,11 +19,11 @@ The pipelines can be run by executing the corresponding scripts while in the roo
 
 1. To create the required datasets, run 'resnet_dataset_pipeline':
 
-    ```python ./pipelines/resnet_dataset_pipeline run```
+    ```python pipelines/resnet_dataset_pipeline run```
     
 2. To preprocess the datasets, run the 'preprocess_resnet_pipeline':
 
-    ```python ./pipelines/preprocess_resnet_pipeline run```
+    ```python pipelines/preprocess_resnet_pipeline run```
     
 ### **Loading Data Into Neo4j**
 
