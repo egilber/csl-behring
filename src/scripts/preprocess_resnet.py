@@ -122,6 +122,7 @@ class DataProcessor:
         df[':START_ID'] = pd.to_numeric(df[':START_ID'], errors='coerce').astype('int64')
         df[':END_ID'] = pd.to_numeric(df[':END_ID'], errors='coerce').astype('int64')
         df['type:TYPE'] = df['type:TYPE'].astype('category')
+        df['type:TYPE'] = df['type:TYPE'].str.replace('-', '_')
         with open(output_path, 'wb') as file:
             pickle.dump(df, file)
 
