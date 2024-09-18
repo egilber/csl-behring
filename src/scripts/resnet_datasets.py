@@ -33,8 +33,8 @@ attributes_sql_query = f"SELECT  \
 id, inkey[1], attributes, relationship, outkey[1] from {database_name}.control \
 WHERE (control.id = control.attributes and inkey[1] is not null and outkey[1] is not null)"
 
-node_sql_query = 'select id, name, nodetype from resnet18.node where id is not null and name is not null and nodetype \
- is not null'
+node_sql_query = f"select id, name, nodetype from {database_name}.node where id is not null and name is not null and nodetype \
+ is not null"
 
 
 class CreateDatasets:
